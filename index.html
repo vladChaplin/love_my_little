@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>10 месяцев вместе ❤️</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:'Georgia',serif;
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      min-height:100vh;overflow-x:hidden
+    }
+    .section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px 20px}
+    .container{text-align:center;z-index:10;position:relative}
+    h1{color:#fff;font-size:3em;margin-bottom:20px;text-shadow:2px 2px 4px rgba(0,0,0,.3)}
+    .subtitle{color:#ffe0f0;font-size:1.5em;margin-bottom:40px;text-shadow:1px 1px 2px rgba(0,0,0,.2)}
+    .photo-frame{width:350px;height:350px;margin:0 auto 30px;position:relative;animation:pulse 2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+    .heart-frame{
+      width:100%;height:100%;background:linear-gradient(45deg,#ff6b9d,#c06c84);
+      border-radius:50%;display:flex;justify-content:center;align-items:center;
+      box-shadow:0 10px 40px rgba(255,107,157,.5);position:relative;overflow:hidden
+    }
+    .heart-frame::before{
+      content:'❤️';position:absolute;top:-30px;font-size:3em;animation:heartBeat 1.5s ease-in-out infinite
+    }
+    @keyframes heartBeat{0%,100%{transform:scale(1)}25%{transform:scale(1.2)}}
+    .photo-placeholder{
+      width:320px;height:320px;border-radius:50%;background:#fff;display:flex;justify-content:center;align-items:center;
+      font-size:1.2em;color:#666;text-align:center;padding:0;box-shadow:inset 0 0 20px rgba(0,0,0,.1);overflow:hidden
+    }
+    .photo-placeholder img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+    .message{color:#fff;font-size:1.3em;max-width:600px;margin:0 auto 40px;line-height:1.6;text-shadow:1px 1px 3px rgba(0,0,0,.3)}
+    .peach-button{
+      font-size:5em;background:none;border:none;cursor:pointer;transition:transform .3s ease;
+      animation:bounce 2s ease-in-out infinite;filter:drop-shadow(0 5px 15px rgba(0,0,0,.3))
+    }
+    .peach-button:hover{transform:scale(1.2) rotate(10deg)}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+    .button-text{color:#fff;font-size:.4em;margin-top:10px;text-shadow:1px 1px 3px rgba(0,0,0,.3)}
+    .floating-heart{position:fixed;font-size:2em;animation:float 10s linear infinite;pointer-events:none;z-index:1}
+    @keyframes float{0%{transform:translateY(100vh) rotate(0);opacity:1}100%{transform:translateY(-100px) rotate(360deg);opacity:0}}
+    .floating-smile{position:fixed;font-size:2.5em;animation:float 12s linear infinite;pointer-events:none;z-index:1}
+
+    /* Квиз */
+    .quiz-section{background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%)}
+    .quiz-container{
+      max-width:700px;width:100%;background:#fff;border-radius:30px;padding:40px;
+      box-shadow:0 20px 60px rgba(0,0,0,.3);opacity:0;transform:translateY(50px);animation:fadeInUp .8s ease forwards
+    }
+    @keyframes fadeInUp{to{opacity:1;transform:translateY(0)}}
+    .quiz-title{color:#f5576c;font-size:2.5em;margin-bottom:30px}
+    .question-container{display:none;animation:slideIn .5s ease}
+    .question-container.active{display:block}
+    @keyframes slideIn{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+    .question{font-size:1.5em;color:#333;margin-bottom:20px;font-weight:bold}
+    .answer-btn{
+      display:block;width:100%;padding:20px;margin:15px 0;font-size:1.2em;
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;border-radius:15px;cursor:pointer;
+      transition:all .3s ease;box-shadow:0 5px 15px rgba(0,0,0,.2)
+    }
+    .answer-btn:hover{transform:translateY(-5px);box-shadow:0 10px 25px rgba(0,0,0,.3)}
+    .answer-btn.correct{background:linear-gradient(135deg,#11998e 0%,#38ef7d 100%);animation:correctPulse .5s ease}
+    .answer-btn.wrong{background:linear-gradient(135deg,#eb3349 0%,#f45c43 100%);animation:shake .5s ease}
+    @keyframes correctPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+    .result{display:none;text-align:center}
+    .result.show{display:block;animation:fadeInUp .8s ease}
+    .result-emoji{font-size:5em;margin-bottom:20px;animation:heartBeat 1.5s ease-in-out infinite}
+    .result-text{font-size:1.8em;color:#f5576c;margin-bottom:20px}
+    .result-message{font-size:1.3em;color:#666;line-height:1.6}
+    .progress{font-size:1.2em;color:#999;margin-bottom:20px}
+
+    /* Медиа-блок вопроса: всегда помещается красиво */
+    .question-media{
+      position:relative;
+      width:100%;
+      aspect-ratio:16/9;                 /* стабильная высота на десктопе */
+      border-radius:20px;
+      margin-bottom:18px;
+      overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,.15);
+      background:#111;
+    }
+    .question-media .question-bg{
+      position:absolute;inset:0;
+      width:100%;height:100%;
+      object-fit:cover;
+      filter:blur(20px) brightness(.75);
+      transform:scale(1.15);             /* чтобы не было «просветов» по краям */
+    }
+    .question-media .question-img{
+      position:relative;z-index:1;
+      width:100%;height:100%;
+      object-fit:cover;                   /* горизонтальные — без «пустых полей» */
+    }
+    .question-media.is-portrait .question-img{
+      object-fit:contain;                 /* вертикальные — целиком, без обрезки */
+      background:transparent;
+    }
+    @media (max-width: 480px){
+      .question-media{ aspect-ratio:4/3; } /* повыше карточка на мобильных */
+    }
+
+    /* UI для музыки */
+    .audio-cta{
+      display:none;position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
+      z-index:9999;background:rgba(0,0,0,.65);color:#fff;padding:12px 18px;border-radius:9999px;
+      box-shadow:0 12px 30px rgba(0,0,0,.35);backdrop-filter:blur(6px);cursor:pointer;
+      font-size:16px;user-select:none
+    }
+    .audio-cta:active{transform:translateX(-50%) scale(.98)}
+  </style>
+</head>
+<body>
+  <!-- Музыка -->
+  <audio id="bg-music" src="/assets/music.mp3" preload="auto" loop></audio>
+  <div id="audioCta" class="audio-cta">▶️ Включить музыку</div>
+
+  <!-- Первая секция -->
+  <div class="section" id="main-section">
+    <div class="container">
+      <h1>10 месяцев вместе!</h1>
+      <p class="subtitle">Самых счастливых месяцев в моей жизни</p>
+
+      <div class="photo-frame">
+        <div class="heart-frame">
+          <div class="photo-placeholder">
+            <img
+              src="https://i.ibb.co/gZFFKk2d/IMG-20250826-231600.jpg"
+              alt="Наше фото"
+              loading="lazy"
+              decoding="async"
+              referrerpolicy="no-referrer"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="message">
+        <p>Ты делаешь каждый день особенным! ❤️<br>
+        Спасибо за эти незабываемые 10 месяцев!<br>
+        Люблю тебя всем сердцем! 💕</p>
+      </div>
+
+      <button class="peach-button" onclick="scrollToQuiz()">
+        🍑
+        <div class="button-text">Нажми на меня!</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Квиз -->
+  <div class="section quiz-section" id="quiz-section">
+    <div class="quiz-container">
+      <h2 class="quiz-title">Наш шуточный тест 😄</h2>
+      <div class="progress">Вопрос <span id="current-question">1</span> из <span id="total-questions">5</span></div>
+
+      <div class="question-container active" data-question="1">
+        <div class="question">Кто с кем познакомился первым? 🤔</div>
+        <button class="answer-btn" onclick="checkAnswer(this,false)">Владуська конечно подошёл и заговорил :)</button>
+        <button class="answer-btn" onclick="checkAnswer(this,true)">Пупуся первая заговорила с Владуськой 😏</button>
+        <button class="answer-btn" onclick="checkAnswer(this,false)">Судьба нас свела</button>
+      </div>
+
+      <div class="question-container" data-question="2">
+        <div class="question">Какая наша любимая традиция? 🍕</div>
+        <button class="answer-btn" onclick="checkAnswer(this,false)">Смотреть фильмы по вечерам</button>
+        <button class="answer-btn" onclick="checkAnswer(this,true)">Вместе вкусно покушать! 😋</button>
+        <button class="answer-btn" onclick="checkAnswer(this,false)">Гулять в парке</button>
+      </div>
+
+      <div class="question-container" data-question="3">
+        <div class="question">Что у нас часто срабатывает? 🧠</div>
+        <button class="answer-btn" onclick="checkAnswer(this,false)">Будильник по утрам</button>
+        <button class="answer-btn" onclick="checkAnswer(this,true)">Ментальная связь - ОО ДАА ДЕТКА! ✨</button>
+        <button class="answer-btn" onclick="checkAnswer(this,false)">Сигнализация Виу виу</button>
+      </div>
+
+      <div class="question-container" data-question="4">
+        <div class="question">Что мы любим делать вместе больше всего? 💕</div>
+        <button class="answer-btn" onclick="checkAnswer(this,false)">Спорт и тренировки</button>
+        <button class="answer-btn" onclick="checkAnswer(this,false)">Читать книги</button>
+        <button class="answer-btn" onclick="checkAnswer(this,true)">Проводить время вместе и вкусно есть! 🥰</button>
+      </div>
+
+      <div class="question-container" data-question="5">
+        <div class="question">Выйдешь за Владуську? 😎</div>
+        <button class="answer-btn" onclick="checkAnswer(this,false)">Раз на раз, за владуську двор стреляю в упор :)</button>
+        <button class="answer-btn" onclick="checkAnswer(this,true)">Дааа детка мы сделаем это :)</button>
+        <button class="answer-btn" onclick="checkAnswer(this,false)">Кхм... Ну надо подумать пук пук..</button>
+      </div>
+
+      <div class="result" id="result">
+        <div class="result-emoji">💖</div>
+        <div class="result-text">Поздравляю Нас любимая!</div>
+        <div class="result-message">
+          Спасибо что ты есть!<br>
+          С того момента как встретил тебя, моя жизнь сильно изменилась<br><br>
+          Спасибо за эти незабываемые моменты, дальше больше!<br>
+          Мы построим империю Киса<br>
+          Ты самая лучшая! ❤️<br><br>
+          Люблю тебя больше всего на свете! 💕
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Утилиты
+    const fixIbb = (url) => url.replace("i.ibb.co.com","i.ibb.co");
+
+    // Плавающие эмодзи
+    function createFloatingHeart(){
+      const heart=document.createElement('div');
+      heart.className='floating-heart';heart.textContent='❤️';
+      heart.style.left=Math.random()*100+'%';
+      heart.style.animationDuration=(Math.random()*5+8)+'s';
+      heart.style.animationDelay=Math.random()*3+'s';
+      document.body.appendChild(heart);
+      setTimeout(()=>heart.remove(),13000);
+    }
+    function createFloatingSmile(){
+      const smile=document.createElement('div');
+      smile.className='floating-smile';smile.textContent='😊';
+      smile.style.left=Math.random()*100+'%';
+      smile.style.animationDuration=(Math.random()*5+10)+'s';
+      smile.style.animationDelay=Math.random()*2+'s';
+      document.body.appendChild(smile);
+      setTimeout(()=>smile.remove(),15000);
+    }
+    setInterval(createFloatingHeart,800);
+    setInterval(createFloatingSmile,1200);
+    for(let i=0;i<5;i++){
+      setTimeout(createFloatingHeart,i*300);
+      setTimeout(createFloatingSmile,i*400);
+    }
+
+    // Скролл к квизу
+    function scrollToQuiz(){
+      document.getElementById('quiz-section').scrollIntoView({behavior:'smooth'});
+    }
+
+    // Логика квиза
+    let currentQuestion = 1;
+    const totalQuestions = 5;
+    let correctAnswers = 0;
+
+    function checkAnswer(button,isCorrect){
+      const allButtons=button.parentElement.querySelectorAll('.answer-btn');
+      allButtons.forEach(btn=>{btn.disabled=true;btn.style.cursor='not-allowed';});
+      if(isCorrect){
+        button.classList.add('correct');correctAnswers++;
+        setTimeout(nextQuestion,1500);
+      }else{
+        button.classList.add('wrong');
+        setTimeout(()=>{
+          button.classList.remove('wrong');
+          allButtons.forEach(btn=>{btn.disabled=false;btn.style.cursor='pointer';});
+        },500);
+      }
+    }
+    function nextQuestion(){
+      const cur=document.querySelector('.question-container.active');
+      cur.classList.remove('active');
+      currentQuestion++;
+      document.getElementById('current-question').textContent=currentQuestion;
+      if(currentQuestion<=totalQuestions){
+        document.querySelector(`[data-question="${currentQuestion}"]`).classList.add('active');
+      }else{
+        showResult();
+      }
+    }
+    function showResult(){
+      document.querySelector('.progress').style.display='none';
+      document.getElementById('result').classList.add('show');
+    }
+
+    // Музыка
+    const audioEl = document.getElementById('bg-music');
+    const audioCta = document.getElementById('audioCta');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      tryPlay(true);            // попытка автозапуска
+      attachQuestionImages();   // прикрепляем картинки к вопросам
+    });
+
+    audioCta.addEventListener('click', () => { tryPlay(false); });
+
+    function tryPlay(isAuto){
+      audioEl.volume = 0.5;
+      audioEl.play()
+        .then(()=>{ audioCta.style.display='none'; })
+        .catch(()=>{ if(isAuto){ audioCta.style.display='inline-block'; }});
+    }
+    ['click','touchstart','keydown'].forEach(evt=>{
+      window.addEventListener(evt, () => tryPlay(false), { once:true, passive:true });
+    });
+
+    // Картинки для вопросов
+    const questionImagesRaw = [
+      "https://i.ibb.co.com/1fbf1X6d/1.jpg",
+      "https://i.ibb.co.com/4nKvg65c/2.jpg",
+      "https://i.ibb.co.com/JY0FQjZ/3.jpg",
+      "https://i.ibb.co.com/8JTp1hK/4.jpg",
+      "https://i.ibb.co.com/FqCvX5yb/5.jpg",
+      "https://i.ibb.co.com/zHTMR1Pr/6.jpg",
+      "https://i.ibb.co.com/jPk6kxFW/7.jpg",
+      "https://i.ibb.co.com/Gfm1QD8N/8.jpg",
+      "https://i.ibb.co.com/39nCh0HC/9.jpg",
+      "https://i.ibb.co.com/MxJKgjS6/10.jpg",
+      "https://i.ibb.co.com/3LwVWMf/11.jpg",
+      "https://i.ibb.co.com/N6tPKyzb/12.jpg"
+    ].map(fixIbb);
+
+    function attachQuestionImages(){
+      const questions = document.querySelectorAll(".question-container");
+      questions.forEach((qc, i) => {
+        const url = questionImagesRaw[i];
+        if(!url) return;
+
+        // Обёртка с размытым фоном + само изображение
+        const wrap = document.createElement("div");
+        wrap.className = "question-media";
+
+        const bg = new Image();
+        bg.className = "question-bg";
+        bg.src = url;
+        bg.alt = "";
+
+        const img = new Image();
+        img.className = "question-img";
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.setAttribute("referrerpolicy","no-referrer");
+        img.alt = `Наше фото ${i+1}`;
+        img.src = url;
+
+        // Если вертикальная — показываем полностью (contain)
+        img.onload = () => {
+          if (img.naturalHeight > img.naturalWidth * 1.1) {
+            wrap.classList.add('is-portrait');
+          }
+        };
+        // Если ссылка битая — не ломаем верстку
+        img.onerror = () => { wrap.remove(); };
+
+        wrap.appendChild(bg);
+        wrap.appendChild(img);
+
+        const questionTitle = qc.querySelector('.question');
+        if(questionTitle){
+          qc.insertBefore(wrap, questionTitle);
+        }else{
+          qc.insertBefore(wrap, qc.firstChild);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
